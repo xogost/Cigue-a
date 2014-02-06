@@ -16,9 +16,9 @@
     #map-canvas { width: 100%;  }
     #navigate { margin: 0px; }
     .floatButton { position: absolute; bottom: 7em; z-index: 99; width: 100%; margin: 0 auto; }
-    .square { margin-top 2em; width: 5em; height: 5em; background: #3d3d3d; display: inline-block;}
+    .square { margin-top 2em; width: 90px; height: 90px; background: #3d3d3d; display: inline-block; color: #fff; font-size: 4em; line-height: 90px; text-transform: uppercase;}
     .listView { margin: 1em; padding: 0px; list-style-type: none;}
-    .listView li { border: 1px solid #3d3d3d; padding: 2em; background: #fff; }
+    .listView li { padding: 2em; background: #fff; margin-top: 1em; -moz-border-radius: 3px; -webkit-border-radius: 3px; border-radius: 3px; /*IE 7 AND 8 DO NOT SUPPORT BORDER RADIUS*/ -moz-box-shadow: 0px 0px 2px #000000; -webkit-box-shadow: 0px 0px 2px #000000; box-shadow: 0px 0px 2px #000000; /*IE 7 AND 8 DO NOT SUPPORT BLUR PROPERTY OF SHADOWS*/ }
   </style>
 </head>
 <body>
@@ -63,15 +63,20 @@
   <script type="text/x-handlebars" id="order">
     <div style="width: 100%; text-align: center;">
       <br/>
-      <button class="btn btn-success btn-lg" style="width: 95%; margin 0 auto;">Agregar Producto!</button>
+      <div style="width: 100%; text-align: center;">
+
+        <h1>Donde Lucho!</h1>
+        <h2>Av Cali 17 - 10 Int4</h2>
+        <h2>Tel. 5555555</h2>
+        <br/>
+        <label for="product">Producto:</label>
+        <input id="product" class="form-control" style="width: 80%; margin: 0 auto;" type='text'  value="" placeholder="Producto..." />
+        <label for="count">Cantidad:</label>
+        <input id="count" class="form-control" style="width: 80%; margin: 0 auto;" type='text' value="" placeholder="Cantidad..." />
+        <button class="btn btn-primary btn-lg" onclick="addProduct();" style="width: 40%; margin: 1em auto;">Agregar Producto!</button>
+        <button class="btn btn-success btn-lg" onclick="confirmOrder();" style="width: 40%; margin: 1em auto;">Confirmar y Enviar!</button>
+      </div>
       <ul class="listView">
-        <li>
-          <div class="square"></div>
-          <div style=" width: 70%; float: right; ">
-            <input class="form-control" type='text'  value="" placeholder="Ingrese aqui el producto..." />
-            <input class="form-control" type='text' value="" placeholder="Ingrese aqui la cantidad..." />
-          </div>
-        </li>
       </ul>
     </div>
   </script>
@@ -120,7 +125,27 @@
         }
 
 
-      });
+    });
+    var countProducts = 1;
+    function addProduct(){
+      var html = "<li style='border: 2px dashed {background-color}; '> <div style='background: {background-color};' class='square'>{first}</div> <div style=' width: 70%; float: right; '> <input class='form-control' type='text'  value='{product}' placeholder='Producto...' /> <input class='form-control' type='text' value='{count}' placeholder='Cantidad...' /> </div></li>";
+
+        var product = $("#product").val();
+        var count = $("#count").val();
+        var color = '#'+Math.floor(Math.random()*16777215).toString(16);
+
+        html = html.replace(/{background-color}/g, color);
+        html = html.replace("{first}", countProducts + "." + product.substring(0,1));
+        html = html.replace("{product}", product);
+        html = html.replace("{count}", count);
+        countProducts++;
+        $(".listView").append(html);
+    }
+
+    function confirmOrder(){
+      alert("Su domicilio esta siendo enviado, en un lapso de 05 a 10 minutos confirmara el precio y envío, Gracias por utilizar Cigueña.");
+    }
   </script>
 </body>
 </html>
+
