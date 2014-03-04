@@ -2,7 +2,7 @@ App = Ember.Application.create();
 
 App.Router.map(function() {
 	this.route("index", {path: "/"});
-	this.route("order", {path: "/order"});
+	this.route("order", {path: "/order/:idstore"});
 });
 
 /*App.IndexRoute = Ember.Route.extend({
@@ -16,4 +16,8 @@ App.IndexRoute = Ember.Route.extend({
         // this redirects / to /dashboard
         this.transitionTo('index');
     }
+});
+
+App.OrderController = Ember.ObjectController.extend({
+	
 });
