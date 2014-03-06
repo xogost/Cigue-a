@@ -40,8 +40,8 @@ p, label, th, button{font-size: 1.4em;}
       <!-- Collect the nav links, forms, and other content for toggling -->
       <div  class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
-          <li class="active">{{#link-to "index"}}Home{{/link-to}}</li>
-          <li>{{#link-to "order"}}Orders{{/link-to}}</li>
+          <li class="active"><a href="#" onclick='window.location = "#/"; window.location.reload();'>Inicio</a></li>
+          <!-- <li>{{#link-to "order"}}Orders{{/link-to}}</li> -->
         </ul>
         <form class="navbar-form navbar-left" role="search">
           <div class="form-group">
@@ -133,12 +133,7 @@ p, label, th, button{font-size: 1.4em;}
         });
 
         socket.on('confirmationOrder', function(data){
-          alert(data.state);
-          $(".listView").html("");
-          $("#form-data").css("display", "none");
-          $(".listView").css("display", "block");
-          $("#manageOrder").css("display", "block");
-          arrayProducts = [];
+          
         });
 
         if($("#map-canvas").length != 0)
@@ -181,31 +176,36 @@ p, label, th, button{font-size: 1.4em;}
                 type: 'POST',
                 data: {},
                 success: function(result){
-                  for(item in result){
-                    var myLatlng = new google.maps.LatLng(result[item][0].latitude.toString(),result[item][0].longitude.toString());
-                var mapOptions = {
-                  zoom: 4,
-                  center: myLatlng,
-                  mapTypeId: google.maps.MapTypeId.ROADMAP
-                }
+                  for(item in result.storeJson){
+                    if(result.storeJson[item].id != undefined){
+                      console.log(result.storeJson[item].latitude);
+                      var myLatlng = new google.maps.LatLng(result.storeJson[item].latitude.toString(),result.storeJson[item].longitude.toString());
+                      var mapOptions = {
+                        zoom: 4,
+                        center: myLatlng,
+                        mapTypeId: google.maps.MapTypeId.ROADMAP
+                      }
 
-                var marker = new google.maps.Marker({
-                  position: myLatlng,
-                  map: map,
-                  title: result[item][0].name,
-                  labelContent: result[item][0].name,
-                  labelAnchor: new google.maps.Point(3, 30),
-                  /*labelClass: "labels", // the CSS class for the label*/
-                  labelInBackground: false,
-                  idStore: result[item][0].id
-                });
+                      var marker = new google.maps.Marker({
+                        position: myLatlng,
+                        map: map,
+                        title: result.storeJson[item].name,
+                        labelContent: result.storeJson[item].name,
+                        labelAnchor: new google.maps.Point(3, 30),
+                        /*labelClass: "labels", // the CSS class for the label*/
+                        labelInBackground: false,
+                        idStore: result.storeJson[item].id
+                      });
 
-                google.maps.event.addListener(marker, 'click', function() {
-                    $("#titleModal").html(marker.title);
-                    $("#textModal").html(marker.title);
-                    storeSelected = marker.idStore,
-                    $('#dialogStore').modal('show');
-                });
+                      google.maps.event.addListener(marker, 'click', (function(marker, item) {
+                          return function() {
+                              $("#titleModal").html(marker.title);
+                              $("#textModal").html(marker.title);
+                              $('#dialogStore').modal('show');
+                              storeSelected = marker.idStore
+                          }
+                      })(marker, item));
+                    }
                   }
                 },
                 error: function(){
@@ -214,10 +214,11 @@ p, label, th, button{font-size: 1.4em;}
           });
         }
         else if($("#idStore").length != 0){
+          idStoreG = $("#idStore").text();
           $.ajax({
               url:"http://192.168.1.102:1337/store/getStore",
               type: "POST",
-              data: {idStore: $("#idStore").text()},
+              data: {idStore: idStoreG},
               success: function(data){
                 console.log(data);
 
@@ -261,9 +262,14 @@ p, label, th, button{font-size: 1.4em;}
       $.ajax({
         url:"http://192.168.1.102:1337/store/order",
         type: "POST",
-        data: {"orderList": arrayProducts, "dataPeople": [$("#name").val(), $("#address").val(), $("#phone").val()]},
+        data: {"idStore": idStoreG,"orderList": arrayProducts, "dataPeople": [$("#name").val(), $("#address").val(), $("#phone").val()]},
         success: function(data){
-          
+          alert("La solicitud de servicio ha sido enviada, y será confirmada en un lapso de 5 a 10 minutos, Gracias.");
+          $(".listView").html("");
+          $("#form-data").css("display", "none");
+          $(".listView").css("display", "block");
+          $("#manageOrder").css("display", "block");
+          arrayProducts = [];
         },
         error: function(){
 
@@ -277,6 +283,7 @@ p, label, th, button{font-size: 1.4em;}
       $("#manageOrder").css("display", "none");
       
     }
+    var idStoreG = 0;
   </script>
 </body>
 </html>
